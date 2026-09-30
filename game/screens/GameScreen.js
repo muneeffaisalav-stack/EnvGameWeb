@@ -29,9 +29,10 @@ export class GameScreen {
     this._missionSys = new MissionSystem(this._missions)
     this._dialogue          = new DialogueSystem(document.getElementById('dialogue-overlay'))
     this._mOverlay          = document.getElementById('mission-overlay')
-    this._adjacentNpc       = null
-    this._showPrompt        = false
+    this._adjacentNpc        = null
+    this._showPrompt         = false
     this._missionOverlayOpen = false
+    this._touchCleanup       = null
   }
 
   mount() {
@@ -41,6 +42,7 @@ export class GameScreen {
 
     this._keyHandler = e => this._handleKey(e)
     window.addEventListener('keydown', this._keyHandler)
+    this._touchCleanup = this._initTouchControls()
     this._loop()
   }
 
@@ -48,6 +50,7 @@ export class GameScreen {
     if (this._rafId) cancelAnimationFrame(this._rafId)
     this._rafId = null
     window.removeEventListener('keydown', this._keyHandler)
+    if (this._touchCleanup) { this._touchCleanup(); this._touchCleanup = null }
     this._canvas.style.display = 'none'
     this._dialogue.close()
     this._mOverlay.innerHTML = ''
@@ -154,6 +157,53 @@ export class GameScreen {
         overlay.innerHTML = ''
       })
     }
+  }
+
+  _initTouchControls() {
+    const tc = document.getElementById('touch-controls')
+    if (!tc) return () => {}
+    tc.style.display = 'flex'
+    const cleanups = []
+
+    const addDir = (id, dc, dr) => {
+      const btn = tc.querySelector(`#${id}`)
+      if (!btn) return
+      let timer = null
+      const move = () => {
+        if (this._dialogue.isOpen() || this._missionOverlayOpen) return
+        this._player.tryMove(dc, dr, this._tileMap)
+        this._checkReachLocation()
+      }
+      const onStart = e => { e.preventDefault(); move(); timer = setInterval(move, 140) }
+      const onStop  = () => { clearInterval(timer); timer = null }
+      btn.addEventListener('touchstart', onStart, { passive: false })
+      btn.addEventListener('touchend',   onStop)
+      btn.addEventListener('touchcancel', onStop)
+      cleanups.push(() => {
+        btn.removeEventListener('touchstart', onStart)
+        btn.removeEventListener('touchend',   onStop)
+        btn.removeEventListener('touchcancel', onStop)
+        clearInterval(timer)
+      })
+    }
+
+    addDir('btn-up',    0, -1)
+    addDir('btn-down',  0,  1)
+    addDir('btn-left', -1,  0)
+    addDir('btn-right', 1,  0)
+
+    const actionBtn = tc.querySelector('#btn-action')
+    if (actionBtn) {
+      const onAction = e => {
+        e.preventDefault()
+        if (this._dialogue.isOpen() || this._missionOverlayOpen) return
+        if (this._adjacentNpc) this._openDialogue(this._adjacentNpc)
+      }
+      actionBtn.addEventListener('touchstart', onAction, { passive: false })
+      cleanups.push(() => actionBtn.removeEventListener('touchstart', onAction))
+    }
+
+    return () => { cleanups.forEach(fn => fn()); tc.style.display = 'none' }
   }
 
   _getCamera() {

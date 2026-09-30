@@ -11,6 +11,21 @@
   <canvas id="game-canvas" width="960" height="720"></canvas>
   <div id="dialogue-overlay"></div>
   <div id="mission-overlay"></div>
+  <div id="touch-controls" style="display:none">
+    <div class="dpad">
+      <button class="dpad-btn" id="btn-up">▲</button>
+      <div class="dpad-middle">
+        <button class="dpad-btn" id="btn-left">◀</button>
+        <div class="dpad-center"></div>
+        <button class="dpad-btn" id="btn-right">▶</button>
+      </div>
+      <button class="dpad-btn" id="btn-down">▼</button>
+    </div>
+    <button class="action-btn" id="btn-action">
+      <span style="font-size:22px;">●</span>
+      <span>TALK</span>
+    </button>
+  </div>
   <script type="module" src="main.js"></script>
 </body>
 </html>

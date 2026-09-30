@@ -38,6 +38,12 @@ body {
   background: rgba(0,0,0,0.4);
 }
 
+@media (max-width: 960px) {
+  #dialogue-overlay {
+    padding-bottom: 160px;
+  }
+}
+
 #mission-overlay {
   position: fixed;
   inset: 0;
@@ -90,10 +96,32 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  background: rgba(0,0,0,0.35);
-  z-index: 40;
+  background: rgba(0,0,0,0.45);
+  z-index: 15;
   user-select: none;
   -webkit-user-select: none;
+  touch-action: none;
+}
+
+.tc-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tc-back {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  color: #aaa;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  padding: 6px 10px;
+  cursor: pointer;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  align-self: flex-start;
 }
 
 .dpad {

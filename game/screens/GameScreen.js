@@ -174,15 +174,20 @@ export class GameScreen {
         this._player.tryMove(dc, dr, this._tileMap)
         this._checkReachLocation()
       }
-      const onStart = e => { e.preventDefault(); move(); timer = setInterval(move, 140) }
-      const onStop  = () => { clearInterval(timer); timer = null }
-      btn.addEventListener('touchstart', onStart, { passive: false })
-      btn.addEventListener('touchend',   onStop)
-      btn.addEventListener('touchcancel', onStop)
+      const onDown = e => {
+        e.preventDefault()
+        try { btn.setPointerCapture(e.pointerId) } catch (_) {}
+        move()
+        timer = setInterval(move, 140)
+      }
+      const onUp = () => { clearInterval(timer); timer = null }
+      btn.addEventListener('pointerdown',  onDown)
+      btn.addEventListener('pointerup',    onUp)
+      btn.addEventListener('pointercancel', onUp)
       cleanups.push(() => {
-        btn.removeEventListener('touchstart', onStart)
-        btn.removeEventListener('touchend',   onStop)
-        btn.removeEventListener('touchcancel', onStop)
+        btn.removeEventListener('pointerdown',  onDown)
+        btn.removeEventListener('pointerup',    onUp)
+        btn.removeEventListener('pointercancel', onUp)
         clearInterval(timer)
       })
     }
@@ -199,8 +204,15 @@ export class GameScreen {
         if (this._dialogue.isOpen() || this._missionOverlayOpen) return
         if (this._adjacentNpc) this._openDialogue(this._adjacentNpc)
       }
-      actionBtn.addEventListener('touchstart', onAction, { passive: false })
-      cleanups.push(() => actionBtn.removeEventListener('touchstart', onAction))
+      actionBtn.addEventListener('pointerdown', onAction)
+      cleanups.push(() => actionBtn.removeEventListener('pointerdown', onAction))
+    }
+
+    const backBtn = tc.querySelector('#btn-back-tc')
+    if (backBtn) {
+      const onBack = () => this._game.switchScreen('levelSelect')
+      backBtn.addEventListener('pointerdown', onBack)
+      cleanups.push(() => backBtn.removeEventListener('pointerdown', onBack))
     }
 
     return () => { cleanups.forEach(fn => fn()); tc.style.display = 'none' }

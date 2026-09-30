@@ -27,10 +27,11 @@ export class GameScreen {
     this._npcs       = ld.npcs.map(n => new NPC(n.id, n.col, n.row, n.dialogueId))
     this._missions   = ld.missionIds.map(id => MISSIONS[id])
     this._missionSys = new MissionSystem(this._missions)
-    this._dialogue   = new DialogueSystem(document.getElementById('dialogue-overlay'))
-    this._mOverlay   = document.getElementById('mission-overlay')
-    this._adjacentNpc = null
-    this._showPrompt  = false
+    this._dialogue          = new DialogueSystem(document.getElementById('dialogue-overlay'))
+    this._mOverlay          = document.getElementById('mission-overlay')
+    this._adjacentNpc       = null
+    this._showPrompt        = false
+    this._missionOverlayOpen = false
   }
 
   mount() {
@@ -54,7 +55,12 @@ export class GameScreen {
   }
 
   _handleKey(e) {
-    if (this._dialogue.isOpen()) return
+    if (e.code === 'Escape') {
+      e.preventDefault()
+      this._game.switchScreen('levelSelect')
+      return
+    }
+    if (this._dialogue.isOpen() || this._missionOverlayOpen) return
     const moves = {
       ArrowUp:[0,-1], ArrowDown:[0,1], ArrowLeft:[-1,0], ArrowRight:[1,0],
       KeyW:[0,-1],    KeyS:[0,1],      KeyA:[-1,0],       KeyD:[1,0],
@@ -83,6 +89,15 @@ export class GameScreen {
   _openDialogue(npc) {
     const data = this._levelData.dialogues[npc.dialogueId]
     if (!data) return
+    const active = this._missionSys.getActiveMission()
+    const isMissionTarget = active?.objectiveType === 'talkTo' && active?.targetNpcId === npc.id
+    if (!isMissionTarget) {
+      this._dialogue.open({
+        npcId: npc.id, name: data.name,
+        lines: [{ text: 'I am busy right now. Come back later.', choices: [{ label: 'OK', action: 'closeDialogue' }] }]
+      }, () => {})
+      return
+    }
     this._dialogue.open(data, choice => this._handleChoice(choice))
   }
 
@@ -111,6 +126,7 @@ export class GameScreen {
   _showMissionComplete(missionId, elapsedSeconds, isLevelComplete) {
     const mission = this._missions.find(m => m.id === missionId)
     const overlay = this._mOverlay
+    this._missionOverlayOpen = true
     overlay.style.display = 'flex'
     overlay.innerHTML = `
       <div style="background:#1a1a2e;border:2px solid #f0c040;padding:40px 48px;
@@ -128,10 +144,12 @@ export class GameScreen {
     `
     if (isLevelComplete) {
       overlay.querySelector('#ov-map').addEventListener('click', () => {
+        this._missionOverlayOpen = false
         this._game.switchScreen('levelSelect')
       })
     } else {
       overlay.querySelector('#ov-next').addEventListener('click', () => {
+        this._missionOverlayOpen = false
         overlay.style.display = 'none'
         overlay.innerHTML = ''
       })

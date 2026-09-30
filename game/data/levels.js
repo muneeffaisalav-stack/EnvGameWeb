@@ -138,8 +138,8 @@ export const LEVELS = [
       ['W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W','W'],
     ],
     npcs: [
-      { id: 'friend',  col: 9, row: 4, dialogueId: 'friendDialogue' },
-      { id: 'friend2', col: 9, row: 4, dialogueId: 'friend2Dialogue' },
+      { id: 'friend',  col: 9,  row: 4, dialogueId: 'friendDialogue' },
+      { id: 'friend2', col: 15, row: 9, dialogueId: 'friend2Dialogue' },
     ],
     dialogues: {
       friendDialogue: {
@@ -166,7 +166,7 @@ export const LEVELS = [
       ['W','B','B','B','B','W','W','B','B','B','B','W','W','B','B','B','B','W','W','W'],
       ['W','B','F','F','B','W','W','B','F','F','B','W','W','B','F','F','B','W','W','W'],
       ['W','B','F','F','D','R','R','D','F','F','D','R','R','D','F','F','B','W','W','W'],
-      ['W','B','B','B','B','W','W','B','B','B','B','W','W','B','B','B','B','W','W','W'],
+      ['W','B','B','D','B','W','W','B','B','B','B','W','W','B','B','B','B','W','W','W'],
       ['W','W','W','R','W','W','W','W','R','W','W','W','W','W','R','W','W','W','W','W'],
       ['W','W','W','R','W','W','W','W','R','W','W','W','W','W','R','W','W','W','W','W'],
       ['W','R','R','R','R','R','R','R','R','R','R','R','R','R','R','R','R','R','R','W'],

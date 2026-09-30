@@ -65,4 +65,26 @@ describe('LEVELS data', () => {
       }
     }
   })
+
+  it('Level 5 row 4 col 3 is walkable, connecting north buildings to the road', () => {
+    const level5 = LEVELS.find(l => l.id === 5)
+    expect(WALKABLE.has(level5.grid[4][3]), 'Level 5 (3,4) must be walkable to reach north NPCs').toBe(true)
+  })
+
+  it('Level 4 NPCs friend and friend2 are at distinct positions', () => {
+    const level4 = LEVELS.find(l => l.id === 4)
+    const friend  = level4.npcs.find(n => n.id === 'friend')
+    const friend2 = level4.npcs.find(n => n.id === 'friend2')
+    expect(friend.col === friend2.col && friend.row === friend2.row).toBe(false)
+  })
+
+  it('findItems mission target tile is adjacent to (not on) the vendor NPC position', () => {
+    const level2  = LEVELS.find(l => l.id === 2)
+    const vendor  = level2.npcs.find(n => n.id === 'vendor')
+    const mission = MISSIONS.findItems
+    const dc = Math.abs(mission.targetTileCol - vendor.col)
+    const dr = Math.abs(mission.targetTileRow - vendor.row)
+    const adjacent = (dc === 1 && dr === 0) || (dc === 0 && dr === 1)
+    expect(adjacent, 'findItems target should be adjacent to vendor, not on the same tile').toBe(true)
+  })
 })

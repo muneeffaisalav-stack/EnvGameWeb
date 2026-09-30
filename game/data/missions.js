@@ -3,7 +3,7 @@ export const MISSIONS = {
   leaveHouse:    { id: 'leaveHouse',    title: 'Leave the House',      description: 'Step outside through the front door',         objectiveType: 'reachLocation', targetTileCol: 3, targetTileRow: 6 },
   buyTea:        { id: 'buyTea',        title: 'Buy a Cup of Tea',     description: 'Talk to the shopkeeper and order tea',         objectiveType: 'talkTo',        targetNpcId: 'shopkeeper' },
   // Level 2
-  findItems:     { id: 'findItems',     title: 'Find the Market Stall',description: 'Walk to the vendor stall',                     objectiveType: 'reachLocation', targetTileCol: 13, targetTileRow: 4 },
+  findItems:     { id: 'findItems',     title: 'Find the Market Stall',description: 'Walk to the vendor stall',                     objectiveType: 'reachLocation', targetTileCol: 14, targetTileRow: 4 },
   payVendor:     { id: 'payVendor',     title: 'Pay the Vendor',       description: 'Talk to the vendor and pay for the goods',     objectiveType: 'talkTo',        targetNpcId: 'vendor' },
   deliverGoods:  { id: 'deliverGoods',  title: 'Deliver the Goods',    description: 'Bring items to the receiver',                  objectiveType: 'talkTo',        targetNpcId: 'receiver' },
   // Level 3

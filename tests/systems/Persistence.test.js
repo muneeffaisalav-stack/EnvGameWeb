@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { loadProgress, saveProgress, markMissionComplete, markLevelComplete } from '../../game/systems/Persistence.js'
 
 beforeEach(() => { localStorage.clear() })
@@ -18,6 +18,16 @@ describe('loadProgress', () => {
     localStorage.setItem('missionGame_progress', 'not-valid-json')
     expect(loadProgress()).toEqual({ unlockedLevels: [1], completedMissions: {}, starRatings: {} })
   })
+
+  it('returns default state when stored JSON parses to null', () => {
+    localStorage.setItem('missionGame_progress', 'null')
+    expect(loadProgress()).toEqual({ unlockedLevels: [1], completedMissions: {}, starRatings: {} })
+  })
+
+  it('returns default state when stored value lacks unlockedLevels array', () => {
+    localStorage.setItem('missionGame_progress', JSON.stringify({ completedMissions: {}, starRatings: {} }))
+    expect(loadProgress()).toEqual({ unlockedLevels: [1], completedMissions: {}, starRatings: {} })
+  })
 })
 
 describe('saveProgress', () => {
@@ -25,6 +35,11 @@ describe('saveProgress', () => {
     const state = { unlockedLevels: [1], completedMissions: {}, starRatings: {} }
     saveProgress(state)
     expect(JSON.parse(localStorage.getItem('missionGame_progress'))).toEqual(state)
+  })
+
+  it('does not throw when localStorage.setItem fails', () => {
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementationOnce(() => { throw new Error('QuotaExceededError') })
+    expect(() => saveProgress({ unlockedLevels: [1], completedMissions: {}, starRatings: {} })).not.toThrow()
   })
 })
 

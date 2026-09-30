@@ -7,14 +7,23 @@ export function loadProgress() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return defaultProgress()
-    return JSON.parse(raw)
+    const parsed = JSON.parse(raw)
+    if (!parsed || !Array.isArray(parsed.unlockedLevels) ||
+        typeof parsed.completedMissions !== 'object' || parsed.completedMissions === null) {
+      return defaultProgress()
+    }
+    return parsed
   } catch {
     return defaultProgress()
   }
 }
 
 export function saveProgress(progress) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(progress))
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress))
+  } catch {
+    // QuotaExceededError or SecurityError — progress not persisted this call
+  }
 }
 
 export function markMissionComplete(levelId, missionId, progress) {
